@@ -4,6 +4,8 @@ from aiogram.dispatcher.filters.builtin import CommandStart,ChatTypeFilter
 from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton
 from aiogram.utils.markdown import hide_link
 
+from data.schedule import time_lesson
+from data.time_schedule import schedule
 from keyboards.private_btn import to_ask_bot
 from loader import dp,bot
 from aiogram.dispatcher import FSMContext
@@ -35,11 +37,21 @@ async def new_user(message: types.Message,state: FSMContext):
 
 @dp.callback_query_handler(text_contains="Ask")
 async def choose_direction(call: types.CallbackQuery,state: FSMContext):
+    keys_time = ["a","b","c","d","f","g","i","j","q","l"]
     message_choice = InlineKeyboardMarkup()
+    time_lesson= InlineKeyboardMarkup()
     if call.data == "AskReedLesson":
         for direct in directions:
             message_choice.row(InlineKeyboardButton(text=f"{direct}", callback_data=f"Choose{direct}"))
         await call.message.answer(f"Выбрать", reply_markup=message_choice)
+    elif call.data == "AskSchedule":
+        for lesson in schedule[:5]:
+                time_lesson.row(InlineKeyboardButton(text=f"{lesson}",callback_data=f"Choose{keys_time[:5]}"))
+        for lesson in schedule[5:]:
+                time_lesson.row(InlineKeyboardButton(text=f"{lesson}",callback_data=f"Choose{keys_time[5:]}"))
+
+
+        await call.message.answer("Рассписание")
     elif call.data == "AskContact":
         await call.message.answer("СК «Олимпийский» ул. Новая 17\nБЦ «Премьер» ул. Терешковой 263/2\nтел. 29-10-28")
 

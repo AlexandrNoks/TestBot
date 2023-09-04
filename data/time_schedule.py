@@ -2,6 +2,19 @@ import calendar
 
 
 time_lesson = ['11:00','12:10','13:20','14:30','15:40','16:50','18:00','19:10','20:20','21:10']
+value_time = tuple(zip(time_lesson[:5],time_lesson[5:]))
+keys_time = ["a","b","c","d","f","g","i","j","q","l"]
+schedule = ['11:00','12:10','13:20','14:30','15:40','16:50','18:00','19:10','20:20','21:10']
+
+
+
+
+
+
+
+# my_list = []
+# for i in my_list:
+#     print(i)
 
 week_day_abbr = list(calendar.day_abbr) # дни недели
 # num_day = int(input("Введите число: "))
