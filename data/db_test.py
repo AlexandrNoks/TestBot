@@ -11,7 +11,7 @@ class ScheduleWeekday:
     def __str__(self):
         return f"{self.time_lesson} {self.name_pupil} {self.one_weekday} {self.two_weekday}"
 
-# Метод добавляет двнные в таблицу
+# Метод добавляет данные в таблицу
 def gen_schedule_weekday():
     for elem in dict_schedule_weekday:
         weekday = ScheduleWeekday(time_lesson=elem,name_pupil=dict_schedule_weekday[elem][0],one_weekday=dict_schedule_weekday[elem][1][0],two_weekday=dict_schedule_weekday[elem][1][1])
