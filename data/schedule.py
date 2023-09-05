@@ -37,6 +37,7 @@ gen_week_day = list(filter_week_day())
 # print(gen_week_day)
 
 
+# [('Пн', 'Ср'), ,('Вт', 'Чт'), ('Ср', 'Пт'), ('Пн', 'Чт'), ('Вт', 'Пт')]
 my_list = []
 i = 1
 filter_day = filter_week_day()
@@ -84,6 +85,10 @@ value_list = []
 key_list = []
 # print(len(time_lesson))
 dict_time_pupil = dict(zip(time_lesson,data))
+# print(f"{len(dict_time_pupil)}")
+# for elem in dict_time_pupil:
+#
+#     print(f"{elem}: {dict_time_pupil[elem]}")
 
 
 # Рассписание на неделю

@@ -26,7 +26,7 @@ We = [obj_class.__str__() for obj_class in obj_class_schedule]
 Tu = [obj_class.__str__() for obj_class in obj_class_schedule]
 Fr = [obj_class.__str__() for obj_class in obj_class_schedule]
 Th = [obj_class.__str__() for obj_class in obj_class_schedule]
-# for obj in Mon:
+# for obj in We:
 #     print(obj)
 
 
@@ -38,11 +38,12 @@ for weekday in dict_schedule_weekday:
     if dict_schedule_weekday[weekday][1] in dict_schedule_weekday[weekday]:
         weekday_list.append(dict_schedule_weekday[weekday][1])
 print(weekday_list)
+# print(dict_schedule_weekday)
 
 for item in weekday_list:
     if weekday_list.count(item) > 1 and item not in double_weekday:
         double_weekday.append(item)
-# print(double_weekday)
+print(double_weekday)
 # Генератор индексов дубликатов в общем списке дней недели (18 эл.)
 def gen_index_schedule():
     for i in weekday_list:
@@ -57,7 +58,7 @@ list_index_double = list(gen_index_schedule()) # индексы дубликат
 get_count_double = list(range(len(list_index_double))) # Индексы элемента списка с дубликатами
 
 index_schedule = dict(zip(get_count_double,list_index_double))
-# print(index_schedule)
+print(index_schedule)
 
 
 # Генератор уроков два дня в неделю
@@ -72,8 +73,8 @@ def gen_schedule_weekday(weekday):
 
 
 schedule_weekday = list(gen_schedule_weekday(0))
-for elem in schedule_weekday:
-    print(elem)
+# for elem in schedule_weekday:
+#     print(elem)
 
 # Генератор в какие дни удобно заниматься два раза в неделю
 for schedule in dict_time_pupil:
@@ -86,8 +87,11 @@ for schedule in dict_time_pupil:
             break
 
 dict_schedule_today = dict(zip(key_list,value_list))
+# for today in dict_schedule_today:
+#     print(f"{today} {dict_schedule_today[today]}")
 
 
 
-
+# for today in dict_schedule_today:
+#     print(f"{today}: {dict_schedule_today[today]}")
 

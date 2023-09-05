@@ -16,3 +16,6 @@ class Price(StatesGroup):
     one_day = State()
     ticket = State()
 
+class Schedule(StatesGroup):
+    weekday = State()
+    time_lesson = State()

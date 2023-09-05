@@ -12,7 +12,7 @@ async def on_startup(dp):
     import middlewares
     middlewares.setup(dp)
     import logging
-    from loader import db,schedule
+    from loader import db,schedule,db_poll
     from utils.db_api.db_gino import on_startup
     from utils.db_api.schemas.schedule import ScheduleWeekday
     print("Подключение к PostgreSQL")
