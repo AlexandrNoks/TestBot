@@ -1,5 +1,8 @@
 from aiogram.dispatcher.filters.state import StatesGroup,State
 
+class ReedLesson(StatesGroup):
+    weekday = State()
+    time_lesson =State()
 
 class Direction(StatesGroup):
     name_direction = State()

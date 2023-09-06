@@ -3,7 +3,7 @@ from aiogram import types
 from aiogram.dispatcher.filters.builtin import CommandStart,ChatTypeFilter
 from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton
 from aiogram.utils.markdown import hide_link
-from states.state_private import Schedule
+from states.state_registration import ReedLesson
 # from data.schedule import time_lesson
 from data.time_schedule import schedule
 from keyboards.private_btn import to_ask_bot
@@ -18,9 +18,10 @@ list_direction = ["Вокал","Танцы","Хариография"]
 directions = dict(zip(list_direction,dict_directions))
 keys_time = ["A","B","C","D","F","G","H","I","G"]
 choice_time = InlineKeyboardMarkup()
-eng_weekday = ['Mon','Tu','We','Th','Fr']
+eng_weekday = ['Mo','Tu','We','Th','Fr']
 time_lesson = ['11:00-11:50','12:10-13:00','13:20-14:10','14:30-15:20','15:40-16:30','16:50-17:40','18:00-18:50','19:10-20:00','20:20-21:10']
 weekdays = ['Пн','Вт','Ср','Чт','Пт']
+
 
 
 @dp.message_handler(CommandStart(),ChatTypeFilter(chat_type=types.ChatType.PRIVATE))
@@ -46,15 +47,18 @@ async def start_command(call: types.CallbackQuery,state: FSMContext):
     if call.data == "AskReedLesson":
         for day in range(len(weekdays)):
             choice_weekday.row(InlineKeyboardButton(text=f"{weekdays[day]}",callback_data=f"AskDay{eng_weekday[day]}"))
-        await call.message.answer("Выберете день",reply_markup=choice_weekday)
-    for weekday in range(len(eng_weekday)):
-        if call.data == f"AskDay{eng_weekday[weekday]}":
-            for i in range(len(time_lesson)):
-                choice_time.row(InlineKeyboardButton(text=f"{time_lesson[i]}",callback_data=f"AskTime{keys_time[i]}"))
-    await call.message.answer("Выберете Время",reply_markup=choice_time)
-    for i in range(len(time_lesson)):
-        if call.data == f"AskTime{keys_time[i]}":
-            await call.message.answer(f"Да")
+        await call.message.answer(f"Выберете день",reply_markup=choice_weekday)
+    # await call.message.answer(f"Hello im {call.data[-4:]}")
+    if call.data[-2:] in eng_weekday:
+        for i in range(len(eng_weekday)):
+            if call.data == f"AskDay{eng_weekday[i]}":
+                for i in range(len(time_lesson)):
+                    choice_time.row(InlineKeyboardButton(text=f"{time_lesson[i]}",callback_data=f"AskTime{keys_time[i]}"))
+                await call.message.answer(f"Выберете Время",reply_markup=choice_time)
+                # await call.message.answer(f"Hello im {call.data[-2:]}")
+    if call.data[-1] in keys_time:
+        await call.message.answer(f"Hello im {call.data[-1]}")
+
 
 
 
