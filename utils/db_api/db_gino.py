@@ -2,14 +2,12 @@ from gino import Gino
 import sqlalchemy as sa
 from aiogram import Dispatcher
 from typing import List
-import datetime
 
-from sqlalchemy import Column, BigInteger, String
+
 
 from data import config
 
 db = Gino()
-
 
 class BaseModel(db.Model):
     __abstract__ = True
@@ -29,20 +27,7 @@ class BaseModel(db.Model):
 class TimedBaseModel(BaseModel):
     __abstract__ = True
     created_at = db.Column(db.DateTime(True),server_default=db.func.now())
-    # updated_at = db.Column(
-    #     db.DateTime(True),
-    #     dafault=datetime.datetime.utcnow(),
-    #     unupdate=datetime.datetime.utcnow(),
-    #     server_default=db.func.now())
-# class FeedBack(BaseModel):
-#     __tablename__ = "feedback"
-#     user_id = Column(BigInteger, primary_key=True)
-#     name = Column(String(length=200))
-#     phone = Column(String(length=300))
-#     direction = Column(String(length=200))
-#
-#
-# print(FeedBack(name="Петя",phone="657657657",direction="Вокал"))
+
 
 
 async def on_startup(dispatcher: Dispatcher):
