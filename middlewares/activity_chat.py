@@ -13,7 +13,7 @@ def _is_holiday() -> bool:
     return datetime.utcnow().month == holiday[0] and datetime.utcnow().day in holiday[1]
 
 
-class WeekendMessageMiddlewares(BaseMiddleware):
+class ActivityChatMiddlewares(BaseMiddleware):
     async def __call__(
             self,
             handler: Callable[[Message,Dict[str,Any]], Awaitable[Any]],

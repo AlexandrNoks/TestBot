@@ -2,30 +2,32 @@ from aiogram.fsm.context import FSMContext
 from aiogram import types, F, Router
 from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton
 from filters.chat_type import ChatTypeFilter
-from filters.filter_group import ActivityChat
+from filters.chat_member import ChatMemberFilter
 # from data.db_schedule import dict_schedule
 from datetime import datetime
 
 from keyboards.group_btn import start_button_user
 from loader import dp, bot
-from data.config import WORDS, GROUP_ID, ADMIN_ID, GROUP_URL, CHANNEL_URL,BOT_URL
+from data.config import WORDS, GROUP_ID, ADMIN_ID, GROUP_URL, CHANNEL_URL, BOT_URL, CHANNEL_ID
 from states.state_chat import UserStatus
 from utils.misc.throttling import rate_limit
 from middlewares.weekend import WeekendMessageMiddlewares
 from middlewares.violation import ForbiddenWordls
+from middlewares.activity_chat import ActivityChatMiddlewares
 
 
 router = Router()
 # router.message.filter(F.chat.type == "supergroup")
-router.message.filter(ActivityChat(chat_type="supergroup"))
+router.message.filter(ChatMemberFilter(chat_member=['supergroup','group']))
 router.message.middleware(ForbiddenWordls())
+router.message.middleware(WeekendMessageMiddlewares())
+router.message.middleware(ActivityChatMiddlewares())
 # message_date = datetime.today().strftime('%d.%m.%Y')
 # message_time = datetime.today().strftime('%H:%M')
 # my_time = datetime.hour
 
-@router.message(F.text)
+@router.message(F.text =='Запустить')
 async def start_chat_user(message: types.Message):
-    schedule_day = ""
     await message.answer(f"Рассписание только на завтра {datetime.today().strftime('%d.%m.%Y')}",  reply_markup=start_button_user)
 
 
@@ -52,18 +54,13 @@ async def cross_link_button(message: types.Message):
     ]])
     await message.answer("Перейти",reply_markup=urls_button)
 
-
-@router.message(F.text)
-async def chat_echo(message: types.Message):
-    text_user = message.text
-    for word in WORDS:
-        if text_user == word:
-            await bot.delete_message(message.chat.id,message.message_id)
-    if text_user == "Запустить":
-        if datetime.now().hour < 17:
-            await message.answer(f"Добрый день! {message.from_user.first_name}")
-        else:
-            await message.answer("Добрый вечер!")
+@dp.message(ChatTypeFilter(chat_type=['private', 'supergroup']), F.photo)
+async def photo_group(message: types.Message):
+    file_ids = []
+    photo_chat = bot.set_chat_photo()
+    file_ids.append(photo_chat.photo[-1].file_id)
+    await bot.send_photo(chat_id=GROUP_ID,photo=file_ids[-1])
+    await bot.send_photo(chat_id=CHANNEL_ID,photo=file_ids[-1])
 
 
 # Пользователь вышел сам

@@ -4,7 +4,6 @@ from filters.chat_type import ChatTypeFilter
 from filters.chat_member import ChatMemberFilter
 from aiogram.types import ReplyKeyboardMarkup, KeyboardButton,InlineKeyboardMarkup,InlineKeyboardButton,ReplyKeyboardRemove
 from aiogram.utils.markdown import hide_link
-
 from loader import dp,bot
 from data.config import ADMIN_ID, time_bun_sec, users_log, GROUP_ID, WORDS, GROUP_URL,CHANNEL_ID
 from states import GetContact,UserStatus, MailingChat, Registered
@@ -14,21 +13,8 @@ from utils.db_api import quick_commands as commands
 from utils.misc.throttling import rate_limit
 
 
-@rate_limit(limit=10, key="Написать педагогу")
-@dp.message(ChatTypeFilter(chat_type=['private']),ChatMemberFilter(chat_member=['member']),F.text == "Написать педагогу")
-async def mailing_chat(message: types.Message):
-    user_answer = message.text
-    await bot.send_message(ADMIN_ID,f"{user_answer}")
-
-@rate_limit(limit=10, key="Узнать расписание")
-@dp.message(ChatTypeFilter(chat_type=['private']),ChatMemberFilter(chat_member=['member']),F.text == "Узнать расписание")
-async def schenali_chat(message: types.Message):
-    await bot.send_message(message.from_user.id,f"Расписание на сегодня мне",message_thread_id=message.from_user.id)
-#
-
 @dp.message(ChatMemberFilter(chat_member=['left','restricted']))
 async def user_kick_chat(message: types.Message):
-    # user_name = types.User.get_current(no_error=True)
     await bot.send_message(message.from_user.id,f" Вы были удалены из чата.")
 
 @dp.message(ChatMemberFilter(chat_member=['left','restricted']),ChatTypeFilter(chat_type=['private']))

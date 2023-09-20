@@ -1,10 +1,8 @@
 from aiogram import Bot, types, F
-from aiogram.types import InputFile, InlineKeyboardMarkup, InlineKeyboardButton
-
 from loader import dp,bot
-from data.config import GROUP_ID,users_log, CHANNEL_ID
+from data.config import GROUP_ID,CHANNEL_ID
 from filters.chat_type import ChatTypeFilter
-from aiogram.types import FSInputFile, URLInputFile, BufferedInputFile
+from aiogram.types import URLInputFile, BufferedInputFile
 
 
 # message_date = datetime.datetime.today().strftime('%d.%m.%Y')

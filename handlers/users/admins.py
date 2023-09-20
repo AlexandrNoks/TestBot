@@ -3,6 +3,7 @@ from aiogram import Router, F
 from aiogram import types
 from aiogram.filters import Command
 from aiogram.fsm.context import FSMContext
+from aiogram.utils.keyboard import InlineKeyboardBuilder
 
 # from data.db_schedule import dict_schedule
 from data.poll_db import name_concert
@@ -22,16 +23,9 @@ from middlewares.violation import ForbiddenWordls
 
 router = Router()
 router.message.middleware(ForbiddenWordls())
-message_date = datetime.today().strftime('%d.%m.%Y')
-message_time = datetime.today().strftime('%H:%M')
-my_time = datetime.hour
-
+router.message.filter()
 name_contest = ""
 
-@router.message(F.text == "Hi")
-async def send_chat(message: types.Message):
-    user = message.from_user.is_bot
-    await bot.send_message(message.chat.id,f"Выберете посылку {user}", reply_markup=mailing_btn)
 
 @dp.message(ChatMemberFilter(chat_member=['creator','administrator']), F.text == "Отправить в чат")
 async def send_chat(message: types.Message):
@@ -40,7 +34,6 @@ async def send_chat(message: types.Message):
 
 @dp.callback_query(F.data.startswith("mailing"))
 async def mailing_chat(call: types.CallbackQuery):
-    schedule_day = ""
     if call.data == "mailingSchedule":
         await bot.send_message(GROUP_ID, f"Рассписание на сегодня {datetime.today().strftime('%d.%m.%Y')}\n")
     if call.data == "mailingPhoto":
@@ -93,15 +86,14 @@ async def message_user(message: types.Message):
 
 
 # Команда начать опрос
-# @dp.message(ChatTypeFilter(chat_type=['private']),ChatMemberFilter(chat_member=['creator','administrator']),F.text == "Создать опрос")
-# async def start_poll(message: types.Message):
-#     for concert in name_concert:
-#         message_choice=InlineKeyboardMarkup(inline_keyboard=[[
-#                 InlineKeyboardButton(text=f"{concert} дата {'д.м.г.'}", callback_data=f"Poll{concert}")
-#         ]])
-#     await bot.send_message(ADMIN_ID,"Выбрать", reply_markup=message_choice)
-#     close_poll = InlineKeyboardMarkup(inline_keyboard=[[InlineKeyboardButton(text="Закрыть опрос",callback_data="PollClose")]])
-#     await bot.send_message(ADMIN_ID,"Закрыть опрос", reply_markup=close_poll)
+@dp.message(ChatTypeFilter(chat_type=['private']),ChatMemberFilter(chat_member=['creator','administrator']),F.text == "Создать опрос")
+async def start_poll(message: types.Message):
+    choice_concert = InlineKeyboardBuilder()
+    for concert in name_concert:
+        choice_concert.add(InlineKeyboardButton(text=f"{concert} дата {'д.м.г.'}", callback_data=f"Poll{concert}"))
+    await bot.send_message(ADMIN_ID,"Выбрать", reply_markup=choice_concert)
+    close_poll = InlineKeyboardMarkup(inline_keyboard=[[InlineKeyboardButton(text="Закрыть опрос",callback_data="PollClose")]])
+    await bot.send_message(ADMIN_ID,"Закрыть опрос", reply_markup=close_poll)
 
 
 
@@ -159,17 +151,15 @@ async def data_poll(message: types.Message):
     data = await commands.select_all_answers()
     await message.answer(f"Итоги опроса:\n{data}")
 
+
 # Команды
 # Удалить пользователя из чата
 @dp.message(ChatTypeFilter(chat_type=['private']),ChatMemberFilter(chat_member=['creator','administrator']),Command("kick"))
 async def status_users(messege: types.Message):
+    kick_chat_user = InlineKeyboardBuilder()
     for user in users_log:
-        message_choice = InlineKeyboardMarkup(
-            inline_keyboard=[[
-                InlineKeyboardButton(text=f"@{user}", callback_data=f"kick{user}")
-            ]]
-        )
-        await messege.answer("Выбрать",reply_markup=message_choice)
+         kick_chat_user.add(InlineKeyboardButton(text=f"@{user}", callback_data=f"kick{user}"))
+    await messege.answer("Выбрать",reply_markup=kick_chat_user.as_markup())
 
 
 @dp.callback_query(F.data == "kick")
@@ -183,11 +173,10 @@ async def call_kick_user_chat(call: types.CallbackQuery,state: FSMContext):
 # Бан пользователя за нарушения
 @dp.message(ChatTypeFilter(chat_type=['private']),ChatMemberFilter(chat_member=['creator','administrator']),Command("ban"))
 async def ban_choose_user(message: types.Message, state: FSMContext) -> bot.ban_chat_member:
+    ban_chat_user = InlineKeyboardBuilder()
     for user in users_log:
-        message_choice = InlineKeyboardMarkup(inline_keyboard=[[
-                InlineKeyboardButton(text=f"@{user}", callback_data=f"ban{user}")
-            ]])
-        await message.answer("Выбрать",reply_markup=message_choice)
+        ban_chat_user.add(InlineKeyboardButton(text=f"@{user}", callback_data=f"ban{user}"))
+    await message.answer("Выбрать",reply_markup=ban_chat_user.as_markup())
 
 
 @dp.callback_query(ChatMemberFilter(chat_member=['banned']),F.data == "ban")
@@ -202,12 +191,11 @@ async def call_kick_user_chat(call: types.CallbackQuery, state: FSMContext):
 #Разбанить пользователя
 @dp.message(ChatMemberFilter(chat_member=['creator','administrator']),ChatTypeFilter(chat_type=['private']),Command("uban"),UserStatus.user_ban)
 async def uban_user(message: types.Message, state:FSMContext) -> bot.unban_chat_member:
-        data = await state.get_data()
-        if data['user_uban'] in choose_user:
-            message_choice = InlineKeyboardMarkup(inline_keyboard=[[
-                InlineKeyboardButton(text=f"Разбанить @{data}", callback_data=f"uban{data}")
-            ]])
-        await state.set_state(UserStatus.user_unban.state)
+    data = await state.get_data()
+    unban_chat_user = InlineKeyboardBuilder()
+    if data['user_uban'] in choose_user:
+        unban_chat_user.add(InlineKeyboardButton(text=f"Разбанить @{data}", callback_data=f"uban{data}"))
+    await state.set_state(UserStatus.user_unban.state)
 
 @dp.callback_query(ChatMemberFilter(chat_member=['member']), F.data == "uban")
 async def call_kick_user_chat(call: types.CallbackQuery, state: FSMContext):
@@ -217,16 +205,11 @@ async def call_kick_user_chat(call: types.CallbackQuery, state: FSMContext):
     await state.set_state(UserStatus.user_unban.state)
 
 
-# @dp.message(ChatTypeFilter(chat_type=['private']),F.text)
-# async def message_user(message: types.Message):
-#     for word in WORDS:
-#         if message.text in word:
-#             await bot.delete_message(message.chat.id, message.message_id)
-#     if message.text == "Hi":
-#         if datetime.now().hour < 17:
-#             await message.answer(f"Добрый день!")
-#         else:
-#             await message.answer("Добрый вечер!")
+# Командаа Закрепить сообщение
+@dp.message(Command('pin'))
+async def pin_message(message: types.Message):
+    user_message = message.message_id
+    await bot.pin_chat_message(GROUP_ID,message_id=user_message)
 
 
 

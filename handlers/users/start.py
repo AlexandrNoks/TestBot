@@ -7,14 +7,10 @@ from aiogram.fsm.context import FSMContext
 from aiogram.utils.keyboard import InlineKeyboardMarkup, InlineKeyboardButton, InlineKeyboardBuilder
 from aiogram.utils.markdown import hide_link
 from states.state_registration import ReedLesson,Registered
-# from data.schedule import time_lesson
-from data.time_schedule import schedule
 from keyboards.private_btn import to_ask_bot
 from loader import dp,bot,reg_db
 from utils.db_api import quick_commands as commands
 from data.config import GROUP_URL, CHANNEL_URL, GROUP_ID
-# from middlewares.activity import ForbiddentWordls
-from data.database import Users
 dict_directions = ["Voc","Dan","Har"]
 list_direction = ["Вокал","Танцы","Хариография"]
 directions = dict(zip(dict_directions,list_direction))
@@ -28,12 +24,12 @@ user_data = {}
 async def new_user(message: types.Message, state: FSMContext):
     try:
         users = await bot.get_chat_member(chat_id=GROUP_ID,user_id=message.from_user.id)
-        # user = await commands.select_user(user_id=message.from_user.id)
-        # if user.status == 'active':
-        #     await commands.select_user(user_id=message.from_user.id)
-        #     await message.answer(f"Ты уже зарегистирован! Заходи в группу {hide_link(GROUP_URL)}")
-        # else:
-        #     await commands.add_user(user_id=message.from_user.id,your_name=message.from_user.first_name)
+        user = await commands.select_user(user_id=message.from_user.id)
+        if user.status == 'active':
+            await commands.select_user(user_id=message.from_user.id)
+            await message.answer(f"Ты уже зарегистирован! Заходи в группу {hide_link(GROUP_URL)}")
+        else:
+            await commands.add_user(user_id=message.from_user.id,your_name=message.from_user.first_name)
         await bot.send_message(message.from_user.id,f"Здравствуйте, чем могу помочь? {users.status}",reply_markup=to_ask_bot)
         # await state.set_state(ReedLesson.weekday.state)
     except Exception:
@@ -62,7 +58,6 @@ async def start_command(call: types.CallbackQuery, state: FSMContext):
     elif call.data == "AskThisContact":
         await call.message.answer("СК «Олимпийский» ул. Новая 17\nБЦ «Премьер» ул. Терешковой 263/2\nтел. 29-10-28")
     await state.set_state(ReedLesson.time_lesson.state)
-
 
 
 @dp.callback_query(F.data == "Register")

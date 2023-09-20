@@ -71,11 +71,7 @@ async def analysis_chat(messege: types.Message):
             else:
                 break
 
-# Команла Закрепить сообщение
-@dp.message(Command('pin'))
-async def pin_message(message: types.Message):
-    user_message = message.message_id
-    await bot.pin_chat_message(GROUP_ID,message_id=user_message)
+
 
 # Команда вывести список админов
 @dp.message(Command('admin'))
