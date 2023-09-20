@@ -1,8 +1,9 @@
-from aiogram.dispatcher.filters.state import StatesGroup,State
+from aiogram.fsm.state import StatesGroup, State
+
 
 class ReedLesson(StatesGroup):
     weekday = State()
-    time_lesson =State()
+    time_lesson = State()
 
 class Direction(StatesGroup):
     name_direction = State()
@@ -11,8 +12,10 @@ class Direction(StatesGroup):
 class Registered(StatesGroup):
     user_id = State()
     your_name = State()
-    your_phone = State()
     direction = State()
+    your_phone = State()
+    name_children = State()
+    age_children = State()
 
 
 class StartRegistered(StatesGroup):

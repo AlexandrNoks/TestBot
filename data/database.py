@@ -7,7 +7,41 @@ import time
 # id - пользователя в БД
 # user_id пользователя в телеграмме
 # time время на которое пользователь был забанен
+# Таблица Users с полями
+# id
+# user_id
+# user_name
+# direction
+# user_phone
+# name_pupil
+# age_pupil
+
 directions = ["Вокал","Гитара","Танцы"]
+class Users:
+    def __init__(self, db_file):
+        self.connection = sqlite3.connect(db_file)
+        self.cursor = self.connection.cursor()
+
+    def exists_user(self,user_id):
+        with self.connection:
+            user = self.cursor.execute("SELECT * FROM 'users' WHERE 'user_id' = ?", (user_id,)).fetchall()
+            return bool(len(user))
+
+    def add_user(self,user_id,your_name,direction,your_phone,name_children,age_children):
+        with self.connection:
+            return self.connection.execute("INSERT INTO FROM 'users' ('user_id','your_name'direction','your_name','your_phone','name_children',"
+                                           "'age_children') VALUES (?)", (user_id,your_name,direction,your_phone,name_children,age_children)).fetchone()
+
+    def get_all_users(self):
+        with self.connection:
+            return self.connection.execute("SELECT * FROM 'users'").fetchall()
+
+    def get_user(self,id):
+        return self.connection.execute("SELECT * FROM 'users' WHERE id = ?", (id,)).fetchone()
+
+
+
+
 class DataBase:
 # Стандартный метод Инициализирует класс
     def __init__(self, db_file):

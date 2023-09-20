@@ -31,12 +31,12 @@ async def on_startup_notify(dp: Dispatcher):
                     KeyboardButton(text="Запросить контакт")
                 ]
             ], resize_keyboard=True)
+        start_chat_button = ReplyKeyboardMarkup(row_width=1, keyboard=[[KeyboardButton(text="Запустить",request_id=GROUP_ID)]],resize_keyboard=True)
+        start_channel_button = ReplyKeyboardMarkup(row_width=1, keyboard=[[KeyboardButton(text="Запустить",request_id=CHANNEL_ID)]],resize_keyboard=True)
         await bot.send_message(ADMIN_ID,'Бот Запущен и готов к работе', reply_markup=start_button_admin)
-
-        start_chat_button = ReplyKeyboardMarkup(row_width=1,resize_keyboard=True)
-        user_button = KeyboardButton(text="Запустить",request_id=GROUP_ID)
-        start_chat_button.add(user_button)
         await bot.send_message(GROUP_ID,f"{datetime.today().strftime('%d.%m.%Y')}", reply_markup=start_chat_button)
+        # await bot.send_message(CHANNEL_ID,f"{datetime.today().strftime('%d.%m.%Y')}", reply_markup=start_channel_button)
     except Exception as err:
         logging.exception(err)
+
 

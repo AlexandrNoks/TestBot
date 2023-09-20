@@ -1,4 +1,5 @@
-from aiogram.dispatcher.filters.state import StatesGroup,State
+from aiogram.fsm.state import StatesGroup, State
+
 
 class FilterMessage(StatesGroup):
     message_del = State()

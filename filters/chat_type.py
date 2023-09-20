@@ -3,7 +3,7 @@ from aiogram import types
 from typing import Union
 
 
-class ActivityChat(BaseFilter):
+class ChatTypeFilter(BaseFilter):
     def __init__(self, chat_type: Union[str, list]):
         self.chat_type = chat_type
 

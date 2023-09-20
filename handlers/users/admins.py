@@ -1,76 +1,112 @@
 from datetime import datetime
-
+from aiogram import Router, F
 from aiogram import types
+from aiogram.filters import Command
+from aiogram.fsm.context import FSMContext
 
 # from data.db_schedule import dict_schedule
 from data.poll_db import name_concert
 
 from loader import dp,bot
-from aiogram.dispatcher import FSMContext
-from aiogram.types import ReplyKeyboardMarkup, KeyboardButton, InlineKeyboardMarkup, InlineKeyboardButton,ReplyKeyboardRemove
-from aiogram.dispatcher.filters import ChatTypeFilter, Command
+from aiogram.types import ReplyKeyboardMarkup, KeyboardButton, InlineKeyboardMarkup, InlineKeyboardButton, \
+    ReplyKeyboardRemove, BufferedInputFile
+from filters.chat_type import ChatTypeFilter
 from keyboards.start_bot_btn import start_button_admin
 from keyboards.mailing_btn import mailing_btn
-from filters import IsAdminGroup
+from filters.chat_member import ChatMemberFilter
 from data.config import *
 from states import GetContact, UserStatus
 from utils.db_api import poll_commands as commands
+from middlewares.violation import ForbiddenWordls
 
+
+router = Router()
+router.message.middleware(ForbiddenWordls())
+message_date = datetime.today().strftime('%d.%m.%Y')
+message_time = datetime.today().strftime('%H:%M')
+my_time = datetime.hour
 
 name_contest = ""
 
-
-@dp.message_handler(ChatTypeFilter(chat_type=types.ChatType.PRIVATE),text="Отправить в чат")
+@router.message(F.text == "Hi")
 async def send_chat(message: types.Message):
-    await bot.send_message(message.chat.id,"Выберете посылку", reply_markup=mailing_btn)
+    user = message.from_user.is_bot
+    await bot.send_message(message.chat.id,f"Выберете посылку {user}", reply_markup=mailing_btn)
+
+@dp.message(ChatMemberFilter(chat_member=['creator','administrator']), F.text == "Отправить в чат")
+async def send_chat(message: types.Message):
+    await bot.send_message(message.chat.id,f"Выберете посылку", reply_markup=mailing_btn)
 
 
-@dp.callback_query_handler(text_contains="mailing")
+@dp.callback_query(F.data.startswith("mailing"))
 async def mailing_chat(call: types.CallbackQuery):
     schedule_day = ""
-    await call.bot.send_message(GROUP_ID,f"Рассписание на {datetime.today().strftime('%d.%m.%Y')}")
-    # if call.data == "mailingSchedule":
-    #     await call.message.answer(f"Рассписание на {datetime.today().strftime('%d.%m.%Y')}")
-    #     for schedule in dict_schedule:
-    #         schedule_day += f"{schedule} {dict_schedule[schedule]}\n"
-    #     await call.bot.send_message(GROUP_ID,schedule_day)
+    if call.data == "mailingSchedule":
+        await bot.send_message(GROUP_ID, f"Рассписание на сегодня {datetime.today().strftime('%d.%m.%Y')}\n")
+    if call.data == "mailingPhoto":
+        file_ids = []
+        with open('media/photos/file_20.jpg', 'rb') as image_from_buffer:
+            photo_chat = await call.message.answer_photo(
+                BufferedInputFile(
+                    image_from_buffer.read(),filename='image_from_buffer.jpg'),caption='Изоброжение из буферобмена')
+        file_ids.append(photo_chat.photo[-1].file_id)
+        await bot.send_photo(chat_id=GROUP_ID,photo=file_ids[-1])
+        await bot.send_photo(chat_id=CHANNEL_ID,photo=file_ids[-1])
+    if call.data == "mailingVideo":
+        file_ids = []
+        with open('media/photos/test_3.mp4', 'rb') as video_from_buffer:
+            video_chat = await call.message.answer_video(
+                BufferedInputFile(
+                    video_from_buffer.read(),filename='video_from_buffer.mp4'),caption='Видео из буферобмена')
+        file_ids.append(video_chat.video.file_id)
+        await bot.send_video(chat_id=GROUP_ID,video=file_ids[-1])
+        await bot.send_video(chat_id=CHANNEL_ID,video=file_ids[-1])
     if call.data == "mailingChannel":
-        link_channel = InlineKeyboardMarkup(row_width=1).row(InlineKeyboardButton(text="Ссылка на канал", callback_data="EnterChannel",url=CHANNEL_URL))
+        link_channel = InlineKeyboardMarkup(
+            inline_keyboard=[[
+                InlineKeyboardButton(text="Ссылка на канал", callback_data="EnterChannel",url=CHANNEL_URL)]])
         await call.message.answer(f"Пригласить на канал:",reply_markup=link_channel)
     elif call.data == "mailingExit":
         await call.bot.delete_message(chat_id=call.message.chat.id,message_id=call.message.message_id)
 
 
-@dp.message_handler(ChatTypeFilter(chat_type=types.ChatType.PRIVATE),text="Перейти..")
+@dp.message(ChatMemberFilter(chat_member=['creator','administrator']),F.text == "Перейти..")
 async def go_to_group(message: types.Message):
-    urls_button = InlineKeyboardMarkup()
-    url_group = InlineKeyboardButton(text="Группа", url=GROUP_URL)
-    url_channel = InlineKeyboardButton(text="Канал", url=CHANNEL_URL)
-    url_bot = InlineKeyboardButton(text="Чат с ботом", url=BOT_URL)
-    urls_button.row(url_group,url_channel,url_bot)
+    urls_button = InlineKeyboardMarkup(
+        inline_keyboard=[[
+            InlineKeyboardButton(text="Группа", url=GROUP_URL),
+            InlineKeyboardButton(text="Канал", url=CHANNEL_URL),
+            InlineKeyboardButton(text="Чат с ботом", url=BOT_URL)
+        ]]
+    )
     await message.answer("Перейти",reply_markup=urls_button)
 
 
-@dp.message_handler(ChatTypeFilter(chat_type=types.ChatType.PRIVATE),text="Написать ученику в л/с")
+@dp.message(ChatTypeFilter(chat_type=['private']),ChatMemberFilter(chat_member=['creator','administrator']),F.text == "Написать ученику в л/с")
 async def message_user(message: types.Message):
-    message_choice = InlineKeyboardMarkup()
     for user in users_log:
-        message_choice.row(InlineKeyboardButton(text=f"@{user}", url='https://t.me/+xxep96iuXxk3ZDky'))
-    await message.answer("Выбрать",reply_markup=message_choice)
+        message_choice = InlineKeyboardMarkup(
+            inline_keyboard=[[
+                InlineKeyboardButton(text=f"@{user}", url='https://t.me/+xxep96iuXxk3ZDky')
+            ]])
+        await message.answer("Выбрать",reply_markup=message_choice)
 
 
 # Команда начать опрос
-@dp.message_handler(ChatTypeFilter(chat_type=types.ChatType.PRIVATE),text="Создать опрос")
-async def start_poll(message: types.Message):
-    message_choice = InlineKeyboardMarkup()
-    for concert in name_concert:
-        message_choice.row(InlineKeyboardButton(text=f"{concert} дата {'д.м.г.'}", callback_data=f"Poll{concert}"))
-    message_choice.add(InlineKeyboardButton(text="Закрыть опрос",callback_data="PollClose"))
-    await bot.send_message(ADMIN_ID,"Выбрать", reply_markup=message_choice)
+# @dp.message(ChatTypeFilter(chat_type=['private']),ChatMemberFilter(chat_member=['creator','administrator']),F.text == "Создать опрос")
+# async def start_poll(message: types.Message):
+#     for concert in name_concert:
+#         message_choice=InlineKeyboardMarkup(inline_keyboard=[[
+#                 InlineKeyboardButton(text=f"{concert} дата {'д.м.г.'}", callback_data=f"Poll{concert}")
+#         ]])
+#     await bot.send_message(ADMIN_ID,"Выбрать", reply_markup=message_choice)
+#     close_poll = InlineKeyboardMarkup(inline_keyboard=[[InlineKeyboardButton(text="Закрыть опрос",callback_data="PollClose")]])
+#     await bot.send_message(ADMIN_ID,"Закрыть опрос", reply_markup=close_poll)
+
 
 
 # Опрос
-@dp.callback_query_handler(text_contains="Poll")
+@dp.callback_query(F.data.startswitch("Poll"))
 async def get_name_contest(call: types.CallbackQuery, state: FSMContext):
     for concert in name_concert:
         if call.data == f"Poll{concert}":
@@ -82,7 +118,7 @@ async def get_name_contest(call: types.CallbackQuery, state: FSMContext):
 
 
 # Голоса
-@dp.poll_answer_handler()
+@dp.poll_answer()
 async def date_answer(poll: types.PollAnswer):
     user_id = poll.user.id
     user_name = poll.user.first_name
@@ -95,94 +131,102 @@ async def date_answer(poll: types.PollAnswer):
             i = "Нет"
             await commands.add_answer(user_id=user_id,user_name=user_name,user_answer=i)
 
+
 # Получить номер телефона
-@dp.message_handler(ChatTypeFilter(chat_type=types.ChatType.PRIVATE), text="Запросить контакт", state=GetContact.user_phone)
+@dp.message(ChatTypeFilter(chat_type=['private']),ChatMemberFilter(chat_member=['creator','administrator']), F.text == "Запросить контакт", GetContact.user_phone)
 async def request_contact(message: types.Message, state: FSMContext):
     get_contact = ReplyKeyboardMarkup(keyboard=[[KeyboardButton(text="Отправить свой номер тел",request_contact=True)]],resize_keyboard=True)
     await message.answer_contact("Пришлите номер телефона",message.from_user.first_name, reply_markup=get_contact)
-    await GetContact.user_phone.set()
+    await state.set_state(GetContact.user_phone.state)
 
 
-@dp.message_handler(ChatTypeFilter(chat_type=types.ChatType.PRIVATE), state=GetContact.user_phone)
+@dp.message(ChatTypeFilter(chat_type=['private']),ChatMemberFilter(chat_member=['creator','administrator']),GetContact.user_phone)
 async def request_contact(message: types.Message, state: FSMContext):
     user_text = message.text
-    async with state.proxy() as data:
-        data["user_phone"] = user_text
-    await message.answer(f"Спасибо, {message.from_user.first_name} Ваш номер телефона: {user_text}",message.from_user.first_name)
+    data = await state.get_data()
+    data["user_phone"] = user_text
+    await message.answer(f"Спасибо, {message.from_user.first_name} Ваш номер телефона: {data['user_phone']}",message.from_user.first_name)
 
 
-@dp.message_handler(ChatTypeFilter(chat_type=[types.ChatType.SUPERGROUP,types.ChatType.GROUP]),text="Переписка с ботом")
+@dp.message(ChatTypeFilter(chat_type=['private']),ChatMemberFilter(chat_member=['creator','administrator']),F.text == "Переписка с ботом")
 async def go_to_group(message: types.Message):
     await message.answer("Готов к работе",reply_markup=start_button_admin)
 
 
 # Итоги опроса
-@dp.message_handler(text="/poll")
+@dp.message(ChatTypeFilter(chat_type=['private']),ChatMemberFilter(chat_member=['creator','administrator']),Command("poll"))
 async def data_poll(message: types.Message):
     data = await commands.select_all_answers()
     await message.answer(f"Итоги опроса:\n{data}")
 
 # Команды
 # Удалить пользователя из чата
-@dp.message_handler(IsAdminGroup(),ChatTypeFilter(chat_type=types.ChatType.PRIVATE),Command("kick", prefixes="/"))
+@dp.message(ChatTypeFilter(chat_type=['private']),ChatMemberFilter(chat_member=['creator','administrator']),Command("kick"))
 async def status_users(messege: types.Message):
-    message_choice = InlineKeyboardMarkup()
     for user in users_log:
-        message_choice.row(InlineKeyboardButton(text=f"@{user}", callback_data=f"kick{user}"))
-    await messege.answer("Выбрать",reply_markup=message_choice)
+        message_choice = InlineKeyboardMarkup(
+            inline_keyboard=[[
+                InlineKeyboardButton(text=f"@{user}", callback_data=f"kick{user}")
+            ]]
+        )
+        await messege.answer("Выбрать",reply_markup=message_choice)
 
 
-@dp.callback_query_handler(text_contains="kick")
-async def call_kick_user_chat(call: types.CallbackQuery):
+@dp.callback_query(F.data == "kick")
+async def call_kick_user_chat(call: types.CallbackQuery,state: FSMContext):
     for user in users_log:
         if call.data == user:
             await bot.ban_chat_member(chat_id=GROUP_ID,user_id=choose_user[user],revoke_messages=True)
-    await UserStatus.user_kick.set()
+    await state.set_state(UserStatus.user_kick.state)
 
 
 # Бан пользователя за нарушения
-@dp.message_handler(IsAdminGroup(),ChatTypeFilter(chat_type=types.ChatType.PRIVATE),Command("ban", prefixes="/"))
+@dp.message(ChatTypeFilter(chat_type=['private']),ChatMemberFilter(chat_member=['creator','administrator']),Command("ban"))
 async def ban_choose_user(message: types.Message, state: FSMContext) -> bot.ban_chat_member:
-    message_choice = InlineKeyboardMarkup()
     for user in users_log:
-        message_choice.row(InlineKeyboardButton(text=f"@{user}", callback_data=f"ban{user}"))
-    await message.answer("Выбрать",reply_markup=message_choice)
+        message_choice = InlineKeyboardMarkup(inline_keyboard=[[
+                InlineKeyboardButton(text=f"@{user}", callback_data=f"ban{user}")
+            ]])
+        await message.answer("Выбрать",reply_markup=message_choice)
 
 
-@dp.callback_query_handler(text_contains="ban")
+@dp.callback_query(ChatMemberFilter(chat_member=['banned']),F.data == "ban")
 async def call_kick_user_chat(call: types.CallbackQuery, state: FSMContext):
-    async with state.proxy() as data:
-        for user in choose_user:
-            if call.data == user:
-                await bot.ban_chat_member(chat_id=GROUP_ID,user_id=choose_user[user],revoke_messages=True)
-                await call.message.answer(f"{user} Поздравляю, ты забанин на {int(time_bun_sec.seconds)}! лет")
-        await UserStatus.user_ban.set()
+    for user in choose_user:
+        if call.data == user:
+            await bot.ban_chat_member(chat_id=GROUP_ID,user_id=choose_user[user],revoke_messages=True)
+            await call.message.answer(f"{user} Поздравляю, ты забанин на {int(time_bun_sec.seconds)}! лет")
+    await state.set_state(UserStatus.user_ban.state)
 
 
 #Разбанить пользователя
-@dp.message_handler(IsAdminGroup(),ChatTypeFilter(chat_type=types.ChatType.PRIVATE),Command("uban", prefixes="/"),state=UserStatus.user_ban)
+@dp.message(ChatMemberFilter(chat_member=['creator','administrator']),ChatTypeFilter(chat_type=['private']),Command("uban"),UserStatus.user_ban)
 async def uban_user(message: types.Message, state:FSMContext) -> bot.unban_chat_member:
-    async with state.proxy() as data:
-        if data in choose_user:
-            message_choice = InlineKeyboardMarkup()
-            message_choice.row(InlineKeyboardButton(text=f"Разбанить @{data}", callback_data=f"uban{data}"))
-        await UserStatus.user_unban.set()
+        data = await state.get_data()
+        if data['user_uban'] in choose_user:
+            message_choice = InlineKeyboardMarkup(inline_keyboard=[[
+                InlineKeyboardButton(text=f"Разбанить @{data}", callback_data=f"uban{data}")
+            ]])
+        await state.set_state(UserStatus.user_unban.state)
 
-
-@dp.callback_query_handler(text_contains="uban")
+@dp.callback_query(ChatMemberFilter(chat_member=['member']), F.data == "uban")
 async def call_kick_user_chat(call: types.CallbackQuery, state: FSMContext):
-    async with state.proxy() as data:
-        if data in choose_user:
-            await bot.uban_chat_member(chat_id=GROUP_ID,user_id=choose_user[data],revoke_messages=True)
-        await call.message.answer(f"{data} Поздравляю, ты разбанин")
-        await UserStatus.user_unban.set()
+    if call.data in choose_user:
+        await bot.uban_chat_member(chat_id=GROUP_ID,user_id=choose_user[call.data],revoke_messages=True)
+    await call.message.answer(f"{call.data} Поздравляю, ты разбанин")
+    await state.set_state(UserStatus.user_unban.state)
 
 
-@dp.message_handler(ChatTypeFilter(chat_type=types.ChatType.PRIVATE))
-async def message_user(message: types.Message):
-    for word in WORDS:
-        if message.text in word:
-            await bot.delete_message(message.chat.id, message.message_id)
+# @dp.message(ChatTypeFilter(chat_type=['private']),F.text)
+# async def message_user(message: types.Message):
+#     for word in WORDS:
+#         if message.text in word:
+#             await bot.delete_message(message.chat.id, message.message_id)
+#     if message.text == "Hi":
+#         if datetime.now().hour < 17:
+#             await message.answer(f"Добрый день!")
+#         else:
+#             await message.answer("Добрый вечер!")
 
 
 

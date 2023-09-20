@@ -7,13 +7,11 @@ from data.db_schedule import dict_schedule_weekday
 
 class ReedLesson(TimedBaseModel):
     __tablename__ = "schedule"
-    number = Column(BigInteger,primary_key=True)
+    user_id = Column(BigInteger,primary_key=True)
+    user_name = Column(String(250))
     weekday = Column(String(100))
     time_lesson = Column(String(250))
-    name_children = Column(String(250))
-    age_children = Column(BigInteger,nullable=False)
-    two_week_day = Column(String(250))
-
+    user_phone = Column(String(500))
 
 
 

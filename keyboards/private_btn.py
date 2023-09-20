@@ -7,13 +7,13 @@ keys_time = ["A","B","C","D","F","G","H","I","G"]
 weekdays = ['Пн','Вт','Ср','Чт','Пт']
 
 
-to_ask_bot = InlineKeyboardMarkup(row_width=3)
-button_write_to_lesson = InlineKeyboardButton(text="Записаться на урок", callback_data="AskReedLesson")
-button_subscription = InlineKeyboardButton(text="Подписаться на канал", callback_data="ThisChannel")
-button_contact = InlineKeyboardButton(text="Наши контакты", callback_data="ThisContact")
-to_ask_bot.insert(button_write_to_lesson)
-to_ask_bot.insert(button_subscription)
-to_ask_bot.insert(button_contact)
+to_ask_bot = InlineKeyboardMarkup(inline_keyboard=[[
+        InlineKeyboardButton(text="Записаться на урок", callback_data="AskReedLesson"),
+        InlineKeyboardButton(text="Подписаться на канал", callback_data="AskThisChannel"),
+        InlineKeyboardButton(text="Наши контакты", callback_data="AskThisContact"),
+        InlineKeyboardButton(text="Пройти регистрацию", callback_data="Register")
+    ]]
+)
 
 
 

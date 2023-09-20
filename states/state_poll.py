@@ -1,6 +1,7 @@
-from aiogram.dispatcher.filters.state import StatesGroup, State
+
 from datetime import datetime
 
+from aiogram.fsm.state import StatesGroup, State
 
 
 class PollContest(StatesGroup):
