@@ -1,6 +1,6 @@
 from aiogram import Dispatcher
-from .chat_type import ChatTypeFilter
-from .chat_member import ChatMemberFilter
+# from .chat_type import ChatTypeFilter
+# from .chat_member import ChatMemberFilter
 # from .chat_subscriber import IsSubscriber
 # from .filter_group import IsAdminGroup,IsUserGroup,IsUserBanned
 # from .filter_private_chat import IsPrivateChat,IsNewUser,IsUserLeftChat, ChatTypeFilter

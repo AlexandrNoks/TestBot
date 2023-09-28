@@ -5,7 +5,7 @@ from loader import dp
 
 # Обработка ошибки неправельный токен
 @dp.error()
-async def errors_handler(update, exception: Exception):
+async def errors_handler(exception: Exception):
 #     if isinstance(exception,TelegramUnauthorizedError):
 #         logging.info(f"Unauthorized: {exception}")
 #         return True
@@ -19,7 +19,7 @@ async def errors_handler(update, exception: Exception):
 #         return True
 #
     if isinstance(exception, TelegramBadRequest):
-        logging.exception(f"404 Плохой запрос! BadRequest\nUpdate: {update}")
+        logging.exception(f"404 Плохой запрос! BadRequest")
         return True
 #
 #     if isinstance(exception,TelegramAPIError):
@@ -30,5 +30,5 @@ async def errors_handler(update, exception: Exception):
 #         logging.exception(f"Не удалось распознать сообщение: {exception}\nUpdate: {update}")
 #         return True
 #
-    logging.exception(f"Update: {update}, \nException: {exception}")
+    logging.exception(f"Exception: {exception}")
 #

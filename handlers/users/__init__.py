@@ -1,9 +1,9 @@
-from .start import dp
-from .admins import dp
-# from .private_chat import dp
+from .start import dp,router
+from .admins import dp,router
+from .registration import dp,router
 
 
 
 
-__all__ = ['dp']
+__all__ = ['dp','router']
 

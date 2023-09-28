@@ -1,5 +1,3 @@
-import datetime
-
 from gino import Gino
 import sqlalchemy as sa
 from typing import List
@@ -23,17 +21,14 @@ class BaseModel(active.Model):
             for column in primary_key_column
         }
         values_str = " ".join(f"{name}={value!r}" for name, value in values.items())
-        return f"<{model} {values_str[:46]}{datetime.datetime.today().strftime('%Y.%m.%d  %H:%M:%S')}>"
-
+        return f"<{model} {values_str}"
 
 
 class TimedBaseModel(BaseModel):
     __abstract__ = True
     created_at = active.Column(active.DateTime(True),server_default=active.func.now())
-
-
-async def on_startup(dispatcher: Dispatcher):
-    await active.set_bind(config.POSTGRES_URL)
-
-
+#
+#
+# async def on_startup(dispatcher: Dispatcher):
+#     await active.set_bind(config.POSTGRES_URL)
 

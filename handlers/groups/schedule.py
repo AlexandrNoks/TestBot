@@ -9,8 +9,8 @@ from states import Schedule
 
 
 #Расписание
-@dp.message(ChatTypeFilter(chat_type=['supergroup','group']), F.text == "Рассписание")
-async def mailing_text(message: types.Message, state: FSMContext):
-    await message.reply(f"Рассписание на сегодня {datetime.today().strftime('%d.%m.%Y')}\n")
+# @dp.message(ChatTypeFilter(chat_type=['supergroup','group']), F.text == "Рассписание")
+# async def mailing_text(message: types.Message, state: FSMContext):
+#     await message.reply(f"Рассписание на сегодня {datetime.today().strftime('%d.%m.%Y')}\n")
 
 

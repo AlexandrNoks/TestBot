@@ -1,6 +1,5 @@
-from utils.db_api.db_activity import TimedBaseModel
-from sqlalchemy import Column, BigInteger, sql,String
-
+from utils.db_api.db_messages import TimedBaseModel
+from sqlalchemy import Column, BigInteger, sql
 
 
 class Messages(TimedBaseModel):

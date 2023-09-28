@@ -1,63 +1,53 @@
 from asyncpg import UniqueViolationError
-from docker.types import Ulimit
-
-from utils.db_api.db_gino import db
-from utils.db_api.schemas.registration import Registarion
-from utils.db_api.schemas.poll_users import PollUsers
+# from docker.types import Ulimit
+from utils.db_api.schemas.activity import Messages
+from utils.db_api.schemas.poll import PollUsers
 
 
-# Добавить данные
-async def add_user(user_id: int, your_name: str, your_phone: str = None, direction: str = None):
+# # Добавить данные
+async def add_message(message_id: int, user_id: int):
     try:
-        user = Registarion(user_id=user_id,your_name=your_name, your_phone=your_phone, direction=direction)
-        await user.create()
+        message = Messages(message_id=message_id, user_id=user_id)
+        await message.create()
     except UniqueViolationError:
-        print("Пользователь не добавлен!")
-
-
-
+        print("Сообщение не добавлено!")
 
 
 # Получить одну запись
-async def select_user(user_id):
-    # users = await Registarion.query.gino.all()
-    user = await Registarion.query.where(Registarion.user_id == user_id).gino.first()
-    return user
-    # for user in users:
-    #     if user_id in user:
-    #         return user
-    #     else:
-    #         return f"Пользователь с {user_id} не найден"
+async def select_message(message_id):
+    message = await Messages.query.where(Messages.message_id == message_id).gino.first()
+    return message
 
 
-async def get_user_direction(user_id):
-    user = await select_user(user_id)
-    get_direction = await user.select("your_name").gino.first()
-    return get_direction
+# # Получить все записи
+async def select_all_message():
+    messages = await Messages.query.gino.all()
+    return messages
 
 
-async def update_user_direction(user_id, choose_direction):
-    direction = await select_user(user_id)
-    await direction.update(direction=choose_direction).apply()
+async def add_answer(user_id: int, user_name: str, user_answer):
+    try:
+        answer = PollUsers(user_id=user_id, user_name=user_name,user_answer=user_answer)
+        await answer.create()
+    except UniqueViolationError:
+        print("Ответ не сохранен!")
 
 
-async def update_user_phone(user_id, choose_phone):
-    your_phone = await select_user(user_id)
-    await your_phone.update(your_phone=choose_phone).apply()
+async def select_all_answers():
+    answers = await PollUsers.query.gino.all()
+    for answer in answers:
+        user_name = await answer.select("user_name").gino.first()
+        user_answer = await answer.select("user_answer").gino.first()
+        return f"Имя {user_name[0]}\nОтвет {user_answer[0]}"
 
-
-
-# Получить все записи
-async def select_all_users():
-    users = await Registarion.query.gino.all()
-    return users
-
-
-# Получить колличество записей
-async def count_users():
-    users = await Registarion.query.gino.all()
-    count = await db.func.count(Registarion.user_id).gino.scalar()
-    return count
-    # return len(users)
-
-
+# # Получить колличество записей
+# async def count_messages():
+#     count_message = await active.func.count(Messages.message_id).gino.scalar()
+#     return count_message
+#     # return len(users)
+#
+#
+# async def count_messages_one_user(user_id):
+#     count_message = await Messages.query.where(Messages.user_id == user_id).gino.all()
+#     return count_message
+#     # return len(users)

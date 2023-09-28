@@ -9,13 +9,15 @@ CHANNEL_ID = -1001986923153
 CHANNEL_URL = "https://t.me/testmychannel03"
 GROUP_URL = "https://t.me/+xxep96iuXxk3ZDky"
 BOT_URL = "https://t.me/FreddyKbot"
+ADMIN_URL = "https://t.me/AlexNoks"
+
 # Пригласительная ссылка
 VK_URL = 'Пригласительная ссылка https://t.me/+xxep96iuXxk3ZDky'
 BOT_ID = 1933153305
 
 ADMIN_ID = 1875053743
 WORDS = ['реклама','яндекс','wildberries']
-db = DataBase('db_message.db')
+db = DataBase('database.db')
 db_message = DBMessage('db_usermessage.db')
 
 

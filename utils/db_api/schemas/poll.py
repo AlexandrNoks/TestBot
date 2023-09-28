@@ -1,4 +1,4 @@
-from utils.db_api.db_gino import TimedBaseModel
+from utils.db_api.db_polls import TimedBaseModel
 from sqlalchemy import Column,String,sql,BigInteger
 
 

@@ -4,6 +4,7 @@ from aiogram.fsm.state import StatesGroup, State
 class GetContact(StatesGroup):
     user_name = State()
     user_phone = State()
+    user_text = State()
 
 
 class UserStatus(StatesGroup):

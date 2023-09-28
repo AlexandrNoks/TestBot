@@ -4,6 +4,7 @@ from aiogram.fsm.state import StatesGroup, State
 class ReedLesson(StatesGroup):
     weekday = State()
     time_lesson = State()
+    your_phone = State()
 
 class Direction(StatesGroup):
     name_direction = State()

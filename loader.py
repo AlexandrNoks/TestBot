@@ -1,12 +1,10 @@
 import logging
 from aiogram import Bot, Dispatcher
 from aiogram.fsm.storage.memory import BaseStorage
-
 from data.config import BOT_TOKEN
-from utils.db_api.db_gino import db
-from utils.db_api.db_poll import db_poll
-from utils.db_api.db_schedule import schedule
-from utils.db_api.db_activity import active
+from utils.db_api.db_polls import poll
+from utils.db_api.db_reedlesson import reedlesson
+from utils.db_api.db_messages import active
 from data.database import DataBase
 
 logging.basicConfig(level=logging.INFO)
@@ -19,4 +17,4 @@ dp = Dispatcher()
 reg_db = DataBase('database.db')
 
 
-__all__ = ["bot","storage", "dp", "db", "db_poll", "schedule", "active"]
+__all__ = ["bot","storage", "dp", "reedlesson","active","poll"]

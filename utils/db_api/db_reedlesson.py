@@ -1,14 +1,15 @@
 from gino import Gino
 import sqlalchemy as sa
+from typing import List
 from aiogram import Dispatcher
+
 from data import config
 
-from typing import List
+
+reedlesson = Gino()
 
 
-schedule = Gino()
-
-class BaseModel(schedule.Model):
+class BaseModel(reedlesson.Model):
     __abstract__ = True
 
     def __str__(self):
@@ -20,13 +21,14 @@ class BaseModel(schedule.Model):
             for column in primary_key_column
         }
         values_str = " ".join(f"{name}={value!r}" for name, value in values.items())
-        return f"<{model} {values_str}>"
+        return f"<{model} {values_str}"
 
 
 class TimedBaseModel(BaseModel):
     __abstract__ = True
-    created_at = schedule.Column(schedule.DateTime(True),server_default=schedule.func.now())
+    created_at = reedlesson.Column(reedlesson.DateTime(True),server_default=reedlesson.func.now())
 
 
-async def on_startup(dispatcher: Dispatcher):
-    await schedule.set_bind(config.POSTGRES_URL)
+
+
+

@@ -1,12 +1,4 @@
-from aiogram.types import ReplyKeyboardMarkup, KeyboardButton
+from aiogram.types import ReplyKeyboardMarkup, KeyboardButton,KeyboardButtonRequestUser
+from data.config import ADMIN_URL,ADMIN_ID
 
 
-start_button_user = ReplyKeyboardMarkup(
-    keyboard=[
-        [
-            KeyboardButton(text="Написать педагогу"),
-            KeyboardButton(text="Узнать рассписание"),
-            KeyboardButton(text="Перейти...")
-        ],
-    ],
-    resize_keyboard=True)
