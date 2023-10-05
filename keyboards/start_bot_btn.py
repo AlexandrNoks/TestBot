@@ -34,8 +34,7 @@ weekdays = ['Пн','Вт','Ср','Чт','Пт']
 to_ask_bot = InlineKeyboardMarkup(inline_keyboard=[[
     InlineKeyboardButton(text="Записаться на урок", callback_data="AskReedLesson"),
     InlineKeyboardButton(text="Подписаться на канал", callback_data="ThisChannel"),
-    InlineKeyboardButton(text="Наши контакты", callback_data="ThisContact"),
-    InlineKeyboardButton(text="Пройти регистрацию", callback_data="Register")
+    InlineKeyboardButton(text="Наши контакты", callback_data="ThisContact")
 ]]
 )
 

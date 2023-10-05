@@ -7,13 +7,15 @@ from aiogram.types import ReplyKeyboardMarkup, KeyboardButton,InlineKeyboardMark
 from aiogram.utils.markdown import hide_link
 from loader import dp,bot
 from data.config import ADMIN_ID, time_bun_sec, users_log, GROUP_ID, WORDS, GROUP_URL,CHANNEL_ID
+from middlewares.weekend import WeekendMessageMiddleware
 from states import GetContact,UserStatus, MailingChat, Registered
 from keyboards.mailing_btn import mailing_btn
 from keyboards.start_bot_btn import to_ask_bot
 # from utils.db_api import quick_commands as commands
 from utils.misc.throttling import rate_limit
 router = Router()
-router.message.filter(ChatTypeFilter(chat_type='private'))
+router.message.filter(ChatTypeFilter(chat_type='supergroup'))
+
 
 
 @router.message(ChatMemberFilter(chat_member='restricted'))

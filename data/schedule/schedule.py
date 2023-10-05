@@ -1,13 +1,17 @@
-from data.schedule import *
+from data.schedule.db_test import ScheduleToday
+from data.schedule.base_model import dict_schedule_weekday, ScheduleWeekday, weekday_list, double_weekday, \
+    dict_time_pupil, key_list, value_list
+
 
 def gen_schedule_weekday():
     for elem in dict_schedule_weekday:
         weekday = ScheduleWeekday(time_lesson=elem,name_pupil=dict_schedule_weekday[elem][0],one_weekday=dict_schedule_weekday[elem][1][0],two_weekday=dict_schedule_weekday[elem][1][1])
         yield weekday
+
 final_schedule_weekday = list(gen_schedule_weekday())
-# print(final_schedule_weekday)
-# for result in final_schedule_weekday:
-#     print(result.__str__())
+# print(final_schedule_weekday.__str__())
+for result in final_schedule_weekday:
+    print(result.__str__())
 
 
 # Рассписание на сегодня
@@ -37,13 +41,13 @@ list_schedule = list(zip(time_schedule_weekday,name_pupil_weekday))
 for weekday in dict_schedule_weekday:
     if dict_schedule_weekday[weekday][1] in dict_schedule_weekday[weekday]:
         weekday_list.append(dict_schedule_weekday[weekday][1])
-print(weekday_list)
+# print(weekday_list)
 # print(dict_schedule_weekday)
 
 for item in weekday_list:
     if weekday_list.count(item) > 1 and item not in double_weekday:
         double_weekday.append(item)
-print(double_weekday)
+# print(double_weekday)
 # Генератор индексов дубликатов в общем списке дней недели (18 эл.)
 def gen_index_schedule():
     for i in weekday_list:
@@ -58,7 +62,7 @@ list_index_double = list(gen_index_schedule()) # индексы дубликат
 get_count_double = list(range(len(list_index_double))) # Индексы элемента списка с дубликатами
 
 index_schedule = dict(zip(get_count_double,list_index_double))
-print(index_schedule)
+# print(index_schedule)
 
 
 # Генератор уроков два дня в неделю

@@ -1,4 +1,5 @@
 import random
+import sqlite3
 table_data = [
     [1,"Корсан Лиза",7,"+7 922 874 873"],
     [2,"Корнилов Андрей",4,"+7 922 874 873"],
@@ -26,6 +27,38 @@ double_weekday = []
 data = []
 for name in table_data:
     data.append(name[1])
+#
+# class Schedule:
+#
+#     def __init__(self, db_file):
+#         self.connection = sqlite3.connect(db_file)
+#         self.cursor = self.connection.cursor()
+#
+#     def create_table(self):
+#         connection = self.connection
+#         cursor = self.connection.cursor()
+#         cursor.execute(
+#             """
+#                 CREATE TABLE IF NOT EXISTS recordlesson (
+#                 id INTEGER PRIMARY KEY,
+#                 name_pupil STRING,
+#                 one_day STRING
+#                 time_lesson_oneday STRING
+#                 two_day STRING
+#                 time_lesson_twoday STRING
+#                 your_phone String)
+#             """)
+#         return connection
+#
+#
+# def add_data(self,user_id,your_name,direction,weekday,time_lesson,your_phone):
+#     with self.connection:
+#         data = self.cursor.execute("""
+#                 INSERT INTO users (user_id, your_name, direction, weekday, time_lesson, your_phone) VALUES (?,?,?,?,?,?)""",
+#                                    (user_id, your_name,direction,weekday,time_lesson,your_phone))
+#         return data
+
+
 def filter_week_day():
     week_day_one = ['Пн','Вт','Ср','Чт','Пт']
     week_day_two = ['Пн','Вт','Ср','Чт','Пт']
@@ -34,7 +67,7 @@ def filter_week_day():
     return count
 
 gen_week_day = list(filter_week_day())
-# print(gen_week_day)
+
 
 
 # [('Пн', 'Ср'), ,('Вт', 'Чт'), ('Ср', 'Пт'), ('Пн', 'Чт'), ('Вт', 'Пт')]
@@ -45,7 +78,7 @@ filter_day = filter_week_day()
 
 for day in range(len(data)):
     result_list = gen_week_day + gen_week_day
-set_week_day = result_list + result_list
+    set_week_day = result_list + result_list
 # print(set_week_day)
 random.shuffle(set_week_day)
 dict_pupil_weekday = dict(zip(data,set_week_day))
@@ -61,6 +94,7 @@ class ScheduleToday:
 
     def __str__(self):
         return f"{self.week_day} {self.time_lesson} : {self.name_pupil}"
+# print(ScheduleToday("11:00","Иван",1))
 
 
 class ScheduleWeekday:

@@ -1,14 +1,20 @@
 from aiogram import Bot, types, F, Router
+
+from filters.chat_type import ChatTypeFilter
 from loader import dp,bot
 from data.config import GROUP_ID,CHANNEL_ID
 from aiogram.types import BufferedInputFile, URLInputFile
 from filters.chat_member import ChatMemberFilter
-
+from middlewares.violation import ForbiddenWordsMiddleware
+from middlewares.weekend import WeekendMessageMiddleware
 
 # message_date = datetime.datetime.today().strftime('%d.%m.%Y')
 # message_time = datetime.datetime.today().strftime('%H:%M')
 router = Router()
-router.message.filter(ChatMemberFilter(chat_member="creator"))
+router.message.filter(ChatTypeFilter(chat_type='supergroup'))
+router.message.filter(ChatMemberFilter(chat_member='member'))
+router.message.middleware(ForbiddenWordsMiddleware())
+router.message.middleware(WeekendMessageMiddleware())
 
 # Кнопка Отправить фото или видео в чат
 @router.callback_query(F.data.startswith("media"))

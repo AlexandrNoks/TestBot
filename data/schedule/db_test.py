@@ -30,14 +30,15 @@ class ScheduleToday:
         self.time_lesson = time_lesson
 
     def __str__(self):
-        return f"{self.week_day} {self.time_lesson} : {self.name_pupil}"
+        return f"{self.name_pupil} {self.week_day} {self.time_lesson}"
 
 # Метод добавляет данные в таблицу
 def gen_schedule_today():
     i = 0
     for today in dict_schedule_today:
         i += 1
-        obj_class = ScheduleToday(week_day=i,time_lesson=today,name_pupil=dict_schedule_today[today])
+        obj_class = ScheduleToday(week_day=i,time_lesson=today,name_pupil=dict_schedule_today[today]).__str__()
         yield obj_class
 
 schedule_today = list(gen_schedule_today())
+print(schedule_today)

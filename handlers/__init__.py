@@ -8,4 +8,4 @@ from .groups import dp,router
 
 
 
-__all__ = ['dp','router']
+__all__ = ['dp']

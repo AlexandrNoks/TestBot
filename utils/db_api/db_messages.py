@@ -21,7 +21,7 @@ class BaseModel(active.Model):
             for column in primary_key_column
         }
         values_str = " ".join(f"{name}={value!r}" for name, value in values.items())
-        return f"<{model} {values_str}"
+        return f"<{model} {values_str}>"
 
 
 class TimedBaseModel(BaseModel):

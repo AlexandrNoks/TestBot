@@ -1,5 +1,5 @@
 import os
-from data.database import DataBase, DBMessage
+# from data.database import
 from datetime import timedelta
 from dotenv import load_dotenv
 load_dotenv()
@@ -17,8 +17,7 @@ BOT_ID = 1933153305
 
 ADMIN_ID = 1875053743
 WORDS = ['реклама','яндекс','wildberries']
-db = DataBase('database.db')
-db_message = DBMessage('db_usermessage.db')
+db = 'database.db'
 
 
 

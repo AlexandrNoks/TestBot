@@ -4,50 +4,42 @@ from aiogram import types
 from aiogram.filters import Command
 from aiogram.fsm.context import FSMContext
 from aiogram.utils.keyboard import InlineKeyboardBuilder
-
-# from data.db_schedule import dict_schedule
-from data.poll_db import name_concert
-
-from loader import dp,bot
-from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton, ReplyKeyboardRemove
+from data import config
+from data.registration import Registration
+from filters.chat_type import ChatTypeFilter
+from loader import dp, bot, active
+from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton
 from keyboards.start_bot_btn import start_button_admin
 from keyboards.mailing_btn import mailing_btn
 from filters.chat_member import ChatMemberFilter
-from data.config import *
-from states import GetContact, UserStatus
-# from utils.db_api import poll_commands as commands
+from data.config import CHANNEL_URL, GROUP_ID, GROUP_URL, BOT_URL, users_log, choose_user, users_id, time_bun_sec
+from states import UserStatus
 from utils.db_api import quick_commands as commands
 from middlewares.violation import ForbiddenWordsMiddleware
-
-
+db = Registration
 router = Router()
+router.message.filter(ChatTypeFilter(chat_type='private'))
 router.message.middleware(ForbiddenWordsMiddleware())
-router.message.filter(ChatMemberFilter(chat_member="creator"))
+router.message.filter(ChatMemberFilter(chat_member="member"))
 name_contest = ""
-# @router.message(F.text)
-# async def mailing_chat(message: types.Message):
-#     user_x = message.from_user.is_bot
-#     message_x = message.reply_to_message
-#     await message.answer(f"{message_x} ответ пользователю {user_x}")
-
+name_concerts= ["Времена года","Праздник Победы","Улыбки"]
 
 @router.message(F.text == "Отправить в чат")
 async def send_chat(message: types.Message):
-    await bot.send_message(message.chat.id,f"Выберете посылку", reply_markup=mailing_btn)
+    await bot.send_message(message.chat.id, f"Выберете посылку", reply_markup=mailing_btn)
 
 
 @router.callback_query(F.data.startswith("mailing"))
 async def mailing_chat(call: types.CallbackQuery):
     if call.data == "mailingSchedule":
-        await bot.pin_chat_message(GROUP_ID,message_id=call.message.message_id)
+        await bot.pin_chat_message(GROUP_ID, message_id=call.message.message_id)
         await bot.send_message(GROUP_ID, f"Рассписание на сегодня {datetime.today().strftime('%d.%m.%Y')}\n")
     if call.data == "mailingChannel":
         link_channel = InlineKeyboardMarkup(
-            inline_keyboard=[[
-                InlineKeyboardButton(text="Ссылка на канал", callback_data="EnterChannel",url=CHANNEL_URL)]])
-        await bot.send_message(GROUP_ID,f"Пригласить на канал:",reply_markup=link_channel)
+            inline_keyboard=[[InlineKeyboardButton(text="Ссылка на канал", callback_data="EnterChannel", url=CHANNEL_URL)]])
+        await bot.send_message(GROUP_ID, f"Пригласить на канал:", reply_markup=link_channel)
     elif call.data == "mailingExit":
-        await call.bot.delete_message(chat_id=call.message.chat.id,message_id=call.message.message_id)
+        await call.bot.delete_message(chat_id=call.message.chat.id, message_id=call.message.message_id)
 
 
 @router.message(F.text == "Перейти..")
@@ -59,7 +51,7 @@ async def go_to_group(message: types.Message):
             InlineKeyboardButton(text="Чат с ботом", url=BOT_URL)
         ]]
     )
-    await message.answer("Перейти",reply_markup=urls_button)
+    await message.answer("Перейти", reply_markup=urls_button)
 
 
 @router.message(F.text == "Написать ученику в л/с")
@@ -69,51 +61,55 @@ async def message_user(message: types.Message):
             inline_keyboard=[[
                 InlineKeyboardButton(text=f"@{user}", url='https://t.me/+xxep96iuXxk3ZDky')
             ]])
-        await message.answer("Выбрать",reply_markup=message_choice)
+        await message.answer("Выбрать", reply_markup=message_choice)
+
+
+@router.message(F.text == "Переписка с ботом")
+async def go_to_group(message: types.Message):
+    await message.answer("Готов к работе", reply_markup=start_button_admin)
 
 
 # Команда начать опрос
 @router.message(F.text == "Создать опрос")
 async def start_poll(message: types.Message):
     choice_concert = InlineKeyboardBuilder()
-    for concert in name_concert:
+    for concert in name_concerts:
         choice_concert.add(InlineKeyboardButton(text=f"{concert} дата {'д.м.г.'}", callback_data=f"Poll{concert}"))
     await message.answer("Выбрать", reply_markup=choice_concert.as_markup())
-    close_poll = InlineKeyboardMarkup(inline_keyboard=[[InlineKeyboardButton(text="Закрыть опрос",callback_data="PollClose")]])
-    await bot.send_message(ADMIN_ID,"Закрыть опрос", reply_markup=close_poll)
 
 
 # Опрос
 @router.callback_query(F.data.startswith("Poll"))
 async def get_name_contest(call: types.CallbackQuery):
-    for concert in name_concert:
+    close_poll = InlineKeyboardMarkup(
+        inline_keyboard=[[InlineKeyboardButton(text="Закрыть опрос", callback_data="PollClose")]])
+    for concert in name_concerts:
         if call.data == f"Poll{concert}":
-            await call.bot.send_poll(GROUP_ID,question=f"Опрос, Дата Состоится {concert}\n Выберите 'Да' если принимаете участие или 'Нет' если не будите участвовать",correct_option_id=1,
-                                     options=["Да","Нет"], type="quiz", is_closed=False, is_anonymous=False, reply_markup=ReplyKeyboardRemove())
+            await call.bot.send_poll(GROUP_ID,
+                                     question=f"Опрос, Дата Состоится {concert}\n Выберите 'Да' если принимаете участие или 'Нет' если не будите участвовать",
+                                     correct_option_id=1,
+                                     options=["Да", "Нет"], type="quiz", is_closed=False, is_anonymous=False,
+                                     reply_markup=close_poll)
     if call.data == "PollClose":
-        await bot.delete_message(chat_id=call.message.chat.id,message_id=call.message.message_id)
+        await bot.delete_message(chat_id=call.message.chat.id, message_id=call.message.message_id)
         # await bot.send_message(ADMIN_ID,"Готов к работе", reply_markup=start_button_admin)
 
 
 # Голоса
 @router.poll_answer()
 async def date_answer(poll: types.PollAnswer):
+    await active.set_bind(config.POSTGRES_URL)
+    await active.gino.create_all()
     user_id = poll.user.id
     user_name = poll.user.first_name
     user_answer = poll.option_ids
     for i in user_answer:
         if i == 0:
             i = "Да"
-            await commands.add_answer(user_id=user_id,user_name=user_name,user_answer=i)
+            await commands.add_answer(user_id=user_id, user_name=user_name, user_answer=i)
         elif i == 1:
             i = "Нет"
-            await commands.add_answer(user_id=user_id,user_name=user_name,user_answer=i)
-
-
-# Получить номер телефона
-@router.message(F.text == "Переписка с ботом")
-async def go_to_group(message: types.Message):
-    await message.answer("Готов к работе",reply_markup=start_button_admin)
+            await commands.add_answer(user_id=user_id, user_name=user_name, user_answer=i)
 
 
 # Итоги опроса
@@ -129,68 +125,61 @@ async def data_poll(message: types.Message):
 async def status_users(messege: types.Message):
     kick_chat_user = InlineKeyboardBuilder()
     for user in users_log:
-         kick_chat_user.add(InlineKeyboardButton(text=f"@{user}", callback_data=f"kick{user}"))
-    await messege.answer("Выбрать",reply_markup=kick_chat_user.as_markup())
+        kick_chat_user.add(InlineKeyboardButton(text=f"@{user}", callback_data=f"kick{user}"))
+    await messege.answer("Выбрать", reply_markup=kick_chat_user.as_markup())
 
 
-@router.callback_query(F.data == "kick")
-async def call_kick_user_chat(call: types.CallbackQuery,state: FSMContext):
-    for user in users_log:
-        if call.data == user:
-            await bot.ban_chat_member(chat_id=GROUP_ID,user_id=choose_user[user],revoke_messages=True)
-    await state.set_state(UserStatus.user_kick.state)
+@router.callback_query(F.data.startswith("kick"))
+async def call_kick_user_chat(call: types.CallbackQuery, state: FSMContext):
+    # connection = db.create_table()
+    # connection = connection.cursor()
+    for user in choose_user:
+        try:
+            if call.data == f"kick{user}":
+                # get_user = db.kick_user(user_id=choose_user[user])
+                await bot.ban_chat_member(chat_id=GROUP_ID, user_id=choose_user[user], revoke_messages=True)
+            await state.set_state(UserStatus.user_kick.state)
+        except IndexError:
+            break
+
 
 
 # Бан пользователя за нарушения
 @router.message(Command("ban"))
 async def ban_choose_user(message: types.Message, state: FSMContext) -> bot.ban_chat_member:
+    # connection = db.create_table()
+    # connection = connection.cursor()
     ban_chat_user = InlineKeyboardBuilder()
-    for user in users_log:
-        ban_chat_user.add(InlineKeyboardButton(text=f"@{user}", callback_data=f"ban{user}"))
-    await message.answer("Выбрать",reply_markup=ban_chat_user.as_markup())
-
-
-@router.callback_query(ChatMemberFilter(chat_member=['banned']),F.data == "ban")
-async def call_kick_user_chat(call: types.CallbackQuery, state: FSMContext):
     for user in choose_user:
-        if call.data == user:
-            await bot.ban_chat_member(chat_id=GROUP_ID,user_id=choose_user[user],revoke_messages=True)
+        ban_chat_user.add(InlineKeyboardButton(text=f"@{user}", callback_data=f"ban{user}"))
+    await message.answer("Выбрать", reply_markup=ban_chat_user.as_markup())
+
+
+@router.callback_query(F.data.startswith("ban"))
+async def call_ban_user_chat(call: types.CallbackQuery, state: FSMContext):
+    # connection = db.create_table()
+    # connection = connection.cursor()
+    for user in choose_user:
+        if call.data == f"ban{user}":
+            # user_ban = db.baned_user(choose_user[user])
+            await bot.ban_chat_member(chat_id=GROUP_ID, user_id=choose_user[user], revoke_messages=True)
             await call.message.answer(f"{user} Поздравляю, ты забанин на {int(time_bun_sec.seconds)}! лет")
     await state.set_state(UserStatus.user_ban.state)
 
 
-#Разбанить пользователя
-@router.message(Command("uban"),UserStatus.user_ban)
-async def uban_user(message: types.Message, state:FSMContext) -> bot.unban_chat_member:
-    data = await state.get_data()
+# Разбанить пользователя
+@router.message(Command("uban"), UserStatus.user_ban)
+async def uban_user(message: types.Message, state: FSMContext) -> bot.unban_chat_member:
     unban_chat_user = InlineKeyboardBuilder()
-    if data['user_uban'] in choose_user:
-        unban_chat_user.add(InlineKeyboardButton(text=f"Разбанить @{data}", callback_data=f"uban{data}"))
-    await state.set_state(UserStatus.user_unban.state)
+    data = await state.get_data()
+    user = data.get("user_id")
+    await bot.uban_chat_member(chat_id=GROUP_ID, user_id=user, revoke_messages=True)
+    # user_ban = db.baned_user(choose_user[user])
+    await message.answer(f"Ты разбанен")
 
 
-@router.callback_query(F.data == "uban")
-async def call_kick_user_chat(call: types.CallbackQuery, state: FSMContext):
-    if call.data in choose_user:
-        await bot.uban_chat_member(chat_id=GROUP_ID,user_id=choose_user[call.data],revoke_messages=True)
-    await call.message.answer(f"{call.data} Поздравляю, ты разбанин")
-    await state.set_state(UserStatus.user_unban.state)
-
-
-# Командаа Закрепить сообщение
+ # Командаа Закрепить сообщение
 @router.message(Command('pin'))
 async def pin_message(message: types.Message):
     user_message = message.message_id
-    await bot.pin_chat_message(GROUP_ID,message_id=user_message)
-
-@router.message(Command('mes'))
-async def get_message(message: types.Message):
-    user_message = commands.select_all_message()
-    await message.answer(f"Вот данные о новом сообщении {user_message}")
-
-
-
-
-
-
-
+    await bot.pin_chat_message(GROUP_ID, message_id=user_message)
