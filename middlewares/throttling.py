@@ -1,5 +1,5 @@
 # import asyncio
-# from data.config import WORDS,GROUP_ID
+# from TestBot.data.config import WORDS,GROUP_ID
 # from aiogram import types, Dispatcher, BaseMiddleware
 #
 #

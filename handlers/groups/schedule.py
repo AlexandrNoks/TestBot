@@ -1,11 +1,11 @@
 from aiogram import types,F
 from aiogram.fsm.context import FSMContext
 from datetime import datetime
-from filters import *
-from data.config import GROUP_ID, ADMIN_ID
-from keyboards.start_bot_btn import start_button_admin
-from loader import dp, bot
-from states import Schedule
+from TestBot.filters import *
+from TestBot.data.config import GROUP_ID, ADMIN_ID
+from TestBot.keyboards.start_bot_btn import start_button_admin
+from TestBot.loader import dp, bot
+from TestBot.states import Schedule
 
 
 #Расписание

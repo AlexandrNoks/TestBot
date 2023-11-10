@@ -1,12 +1,12 @@
 from aiogram import Bot, types, F, Router
 
-from filters.chat_type import ChatTypeFilter
-from loader import dp,bot
-from data.config import GROUP_ID,CHANNEL_ID
+from TestBot.filters.chat_type import ChatTypeFilter
+from TestBot.loader import dp,bot
+from TestBot.data.config import GROUP_ID,CHANNEL_ID
 from aiogram.types import BufferedInputFile, URLInputFile
-from filters.chat_member import ChatMemberFilter
-from middlewares.violation import ForbiddenWordsMiddleware
-from middlewares.weekend import WeekendMessageMiddleware
+from TestBot.filters.chat_member import ChatMemberFilter
+from TestBot.middlewares.violation import ForbiddenWordsMiddleware
+from TestBot.middlewares.weekend import WeekendMessageMiddleware
 
 # message_date = datetime.datetime.today().strftime('%d.%m.%Y')
 # message_time = datetime.datetime.today().strftime('%H:%M')

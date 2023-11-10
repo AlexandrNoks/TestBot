@@ -4,18 +4,18 @@ from aiogram import types
 from aiogram.filters import Command
 from aiogram.fsm.context import FSMContext
 from aiogram.utils.keyboard import InlineKeyboardBuilder
-from data import config
-from data.registration import Registration
-from filters.chat_type import ChatTypeFilter
-from loader import dp, bot, active
+from TestBot.data import config
+from TestBot.data.registration import Registration
+from TestBot.filters.chat_type import ChatTypeFilter
+from TestBot.loader import dp, bot, active
 from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton
-from keyboards.start_bot_btn import start_button_admin
-from keyboards.mailing_btn import mailing_btn
-from filters.chat_member import ChatMemberFilter
-from data.config import CHANNEL_URL, GROUP_ID, GROUP_URL, BOT_URL, users_log, choose_user, users_id, time_bun_sec
-from states import UserStatus
-from utils.db_api import quick_commands as commands
-from middlewares.violation import ForbiddenWordsMiddleware
+from TestBot.keyboards.start_bot_btn import start_button_admin
+from TestBot.keyboards.mailing_btn import mailing_btn
+from TestBot.filters.chat_member import ChatMemberFilter
+from TestBot.data.config import CHANNEL_URL, GROUP_ID, GROUP_URL, BOT_URL, users_log, choose_user, users_id, time_bun_sec
+from TestBot.states import UserStatus
+from TestBot.utils.db_api import quick_commands as commands
+from TestBot.middlewares.violation import ForbiddenWordsMiddleware
 db = Registration
 router = Router()
 router.message.filter(ChatTypeFilter(chat_type='private'))

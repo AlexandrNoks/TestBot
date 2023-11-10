@@ -1,7 +1,7 @@
 # from aiogram import types
 # from aiogram.filters import Command
-# from loader import bot,dp
-# from data.config import GROUP_ID, db, db_message, users_log
+# from TestBot.loader import bot,dp
+# from TestBot.data.config import GROUP_ID, db, db_message, users_log
 #
 #
 # # Сохранить сообщение в БД

@@ -1,7 +1,7 @@
 from asyncpg import UniqueViolationError
 # from docker.types import Ulimit
-from utils.db_api.schemas.activity import Messages
-from utils.db_api.schemas.poll import PollUsers
+from TestBot.utils.db_api.schemas.activity import Messages
+from TestBot.utils.db_api.schemas.poll import PollUsers
 
 
 # # Добавить данные

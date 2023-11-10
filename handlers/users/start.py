@@ -3,15 +3,15 @@ from aiogram import types, F, Router
 from aiogram.filters import CommandStart
 from aiogram.fsm.context import FSMContext
 from aiogram.utils.keyboard import InlineKeyboardMarkup, InlineKeyboardButton, InlineKeyboardBuilder
-from states.state_registration import ReedLesson
-from middlewares.weekend import WeekendMessageMiddleware
-from filters.chat_member import ChatMemberFilter
-from filters.chat_type import ChatTypeFilter
-from keyboards.start_bot_btn import to_ask_bot
-from loader import dp,bot
-from data.config import GROUP_URL, CHANNEL_URL, GROUP_ID
-from data.registration import Registration
-from data.recordlesson import RecordForLesson
+from TestBot.states.state_registration import ReedLesson
+from TestBot.middlewares.weekend import WeekendMessageMiddleware
+from TestBot.filters.chat_member import ChatMemberFilter
+from TestBot.filters.chat_type import ChatTypeFilter
+from TestBot.keyboards.start_bot_btn import to_ask_bot
+from TestBot.loader import dp,bot
+from TestBot.data.config import GROUP_URL, CHANNEL_URL, GROUP_ID
+from TestBot.data.registration import Registration
+from TestBot.data.recordlesson import RecordForLesson
 # db = RecordForLesson("database.db")
 db_reg = Registration("database.db")
 db_rec = RecordForLesson("database.db")

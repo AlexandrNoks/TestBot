@@ -2,10 +2,10 @@ from aiogram.filters import Command, CommandStart
 from aiogram.fsm.context import FSMContext
 from aiogram.types import ReplyKeyboardMarkup, InlineKeyboardMarkup, InlineKeyboardButton, KeyboardButton,BufferedInputFile
 from aiogram import types, F
-from loader import dp,bot
-from filters.chat_type import ChatTypeFilter
-from filters.chat_member import ChatMemberFilter
-from data.config import CHANNEL_URL, WORDS, CHANNEL_ID, GROUP_ID
+from TestBot.loader import dp,bot
+from TestBot.filters.chat_type import ChatTypeFilter
+from TestBot.filters.chat_member import ChatMemberFilter
+from TestBot.data.config import CHANNEL_URL, WORDS, CHANNEL_ID, GROUP_ID
 
 
 # @dp.message(F.text == "Запустить")

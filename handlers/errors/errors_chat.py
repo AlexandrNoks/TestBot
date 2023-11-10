@@ -1,6 +1,6 @@
 import logging
 from aiogram.exceptions import TelegramUnauthorizedError, TelegramAPIError,TelegramBadRequest, RestartingTelegram,UnsupportedKeywordArgument
-from loader import dp
+from TestBot.loader import dp
 # Хэндлеры для обработки ошибок
 
 # Обработка ошибки неправельный токен

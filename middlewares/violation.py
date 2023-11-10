@@ -1,7 +1,7 @@
 from aiogram import types, BaseMiddleware
 from typing import Callable,Any, Dict, Awaitable
-from data.config import WORDS, GROUP_ID
-from loader import bot
+from TestBot.data.config import WORDS, GROUP_ID
+from TestBot.loader import bot
 
 
 def _is_message_chat(message: types.Message) -> bool:

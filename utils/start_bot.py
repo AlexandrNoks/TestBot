@@ -2,9 +2,9 @@ import logging
 from datetime import datetime
 from aiogram import Dispatcher
 import calendar
-from keyboards.start_bot_btn import start_button_user,start_button_admin
-from data.config import GROUP_ID, ADMIN_ID
-from loader import bot
+from TestBot.keyboards.start_bot_btn import start_button_user,start_button_admin
+from TestBot.data.config import GROUP_ID, ADMIN_ID
+from TestBot.loader import bot
 
 
 name_weekday = ['Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб', 'Вс']

@@ -3,13 +3,13 @@ from aiogram.fsm.context import FSMContext
 from aiogram.types import InlineKeyboardMarkup
 from aiogram.utils.keyboard import InlineKeyboardButton, InlineKeyboardBuilder
 
-from data.database import create_table
-from filters.chat_member import ChatMemberFilter
-from filters.chat_type import ChatTypeFilter
-from middlewares.weekend import WeekendMessageMiddleware
-from states.state_registration import Registered
-from loader import dp,bot
-from data.config import CHANNEL_URL
+from TestBot.data.database import create_table
+from TestBot.filters.chat_member import ChatMemberFilter
+from TestBot.filters.chat_type import ChatTypeFilter
+from TestBot.middlewares.weekend import WeekendMessageMiddleware
+from TestBot.states.state_registration import Registered
+from TestBot.loader import dp,bot
+from TestBot.data.config import CHANNEL_URL
 
 router = Router()
 router.message.filter(ChatTypeFilter(chat_type='private'))

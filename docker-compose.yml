@@ -1,0 +1,10 @@
+version: "3.11"
+
+
+services:
+  telegram-bot:
+    container_name: mybot
+    restart: always
+    build:
+      dockerfile: Dockerfile
+    command: "python bot.py"

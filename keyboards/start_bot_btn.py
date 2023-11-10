@@ -1,6 +1,6 @@
 from aiogram.types import ReplyKeyboardMarkup, KeyboardButton, InlineKeyboardButton, InlineKeyboardMarkup, \
     KeyboardButtonRequestUser
-from data.config import GROUP_ID, CHANNEL_ID, BOT_ID, GROUP_URL, ADMIN_ID,ADMIN_URL
+from TestBot.data.config import GROUP_ID, CHANNEL_ID, BOT_ID, GROUP_URL, ADMIN_ID,ADMIN_URL
 
 start_button_admin = ReplyKeyboardMarkup(
                                         keyboard=[

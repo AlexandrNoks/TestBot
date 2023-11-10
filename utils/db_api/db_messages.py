@@ -3,7 +3,7 @@ import sqlalchemy as sa
 from typing import List
 from aiogram import Dispatcher
 
-from data import config
+from TestBot.data import config
 
 
 active = Gino()

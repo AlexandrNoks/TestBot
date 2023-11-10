@@ -2,22 +2,22 @@ from aiogram.fsm.context import FSMContext
 from aiogram import types, F, Router
 from aiogram.filters import Command
 
-from keyboards.start_bot_btn import start_button_admin
-from utils.db_api.db_messages import active
+from TestBot.keyboards.start_bot_btn import start_button_admin
+from TestBot.utils.db_api.db_messages import active
 import asyncio
 from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton, KeyboardButton,ReplyKeyboardMarkup
 from aiogram.utils.keyboard import InlineKeyboardBuilder
-from utils.db_api import quick_commands as commands
-from filters.chat_type import ChatTypeFilter
-from filters.chat_member import ChatMemberFilter
+from TestBot.utils.db_api import quick_commands as commands
+from TestBot.filters.chat_type import ChatTypeFilter
+from TestBot.filters.chat_member import ChatMemberFilter
 from datetime import datetime
-from loader import dp, bot
-from data import config
-from data.config import ADMIN_ID, CHANNEL_URL, BOT_URL, ADMIN_URL
-from states.state_chat import GetContact
-from utils.misc.throttling import rate_limit
-from middlewares.weekend import WeekendMessageMiddleware
-from middlewares.violation import ForbiddenWordsMiddleware
+from TestBot.loader import dp, bot
+from TestBot.data import config
+from TestBot.data.config import ADMIN_ID, CHANNEL_URL, BOT_URL, ADMIN_URL
+from TestBot.states.state_chat import GetContact
+from TestBot.utils.misc.throttling import rate_limit
+from TestBot.middlewares.weekend import WeekendMessageMiddleware
+from TestBot.middlewares.violation import ForbiddenWordsMiddleware
 router = Router()
 router.message.filter(ChatTypeFilter(chat_type='supergroup'))
 router.message.filter(ChatMemberFilter(chat_member='member'))

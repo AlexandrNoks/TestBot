@@ -1,18 +1,18 @@
 from datetime import datetime
 from aiogram import types, F,Router
-from filters.chat_type import ChatTypeFilter
-from filters.chat_member import ChatMemberFilter
-from middlewares.violation import ForbiddenWordsMiddleware
+from TestBot.filters.chat_type import ChatTypeFilter
+from TestBot.filters.chat_member import ChatMemberFilter
+from TestBot.middlewares.violation import ForbiddenWordsMiddleware
 from aiogram.types import ReplyKeyboardMarkup, KeyboardButton,InlineKeyboardMarkup,InlineKeyboardButton,ReplyKeyboardRemove
 from aiogram.utils.markdown import hide_link
-from loader import dp,bot
-from data.config import ADMIN_ID, time_bun_sec, users_log, GROUP_ID, WORDS, GROUP_URL,CHANNEL_ID
-from middlewares.weekend import WeekendMessageMiddleware
-from states import GetContact,UserStatus, MailingChat, Registered
-from keyboards.mailing_btn import mailing_btn
-from keyboards.start_bot_btn import to_ask_bot
+from TestBot.loader import dp,bot
+from TestBot.data.config import ADMIN_ID, time_bun_sec, users_log, GROUP_ID, WORDS, GROUP_URL,CHANNEL_ID
+from TestBot.middlewares.weekend import WeekendMessageMiddleware
+from TestBot.states import GetContact,UserStatus, MailingChat, Registered
+from TestBot.keyboards.mailing_btn import mailing_btn
+from TestBot.keyboards.start_bot_btn import to_ask_bot
 # from utils.db_api import quick_commands as commands
-from utils.misc.throttling import rate_limit
+from TestBot.utils.misc.throttling import rate_limit
 router = Router()
 router.message.filter(ChatTypeFilter(chat_type='supergroup'))
 
